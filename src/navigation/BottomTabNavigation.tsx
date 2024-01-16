@@ -8,13 +8,18 @@ import PeopleTabNavigation from './PeopleTabNavigation';
 import ActivityTabNavigation from './ActivityTabNavigation';
 import RecommendationsTabNavigation from './RecommendationsTabNavigation';
 import ProfileTabNavigation from './ProfileTabNavigation';
+import { createStackNavigator } from '@react-navigation/stack';
+import AuthenticationStackNavigation from './AuthenticationStackNavigation';
+
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 const BottomTabNavigation = () => {
-  const Tab = createBottomTabNavigator();
 
   return (
     <NavigationContainer>
-      <Tab.Navigator screenOptions={{headerShown: false}}>
+      <AuthenticationStackNavigation />
+      {/* <Tab.Navigator screenOptions={{headerShown: false}}>
         <Tab.Screen
           name="Lists"
           key="Lists"
@@ -60,7 +65,7 @@ const BottomTabNavigation = () => {
             // eslint-disable-next-line react/no-unstable-nested-components
             tabBarIcon: ({size, color}) => (<User stroke={'black'} height={22} width={22} />),
           }}/>
-      </Tab.Navigator>
+      </Tab.Navigator> */}
     </NavigationContainer>
   );
 };
