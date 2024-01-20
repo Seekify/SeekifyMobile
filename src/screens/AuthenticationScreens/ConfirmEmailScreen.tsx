@@ -1,34 +1,52 @@
 import { useNavigation } from '@react-navigation/native'
-import { signIn } from 'aws-amplify/auth'
-import React, { useContext, useState } from 'react'
+import { autoSignIn, confirmSignUp, resendSignUpCode } from 'aws-amplify/auth'
+import React, { useState } from 'react'
 import { Dimensions, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { Lock, Unlock, User } from 'react-native-feather'
-import { AuthContext } from '../../context/AuthContext'
+import { Mail, MapPin, Phone, Unlock, User } from 'react-native-feather'
 
-const LoginScreen = () => {
+const ConfirmEmailScreen = ({route}) => {
+  const {username} = route?.params
   const navigation = useNavigation()
 
-  const{signInUser} = useContext(AuthContext)
+  const [confirmationCode, setConfirmationCode] = useState('')
 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-
-  const handleUsernameChage = (text: string) => {
-    setUsername(text)
+  const handleUsernameChange = (text: string) => {
+    setConfirmationCode(text)
   }
 
-  const handlePasswordChage = (text: string) => {
-    setPassword(text)
+  const confirmEmailCode = () => {
+    confirmSignUp({
+        username: username,
+        confirmationCode: confirmationCode
+    })
+    .then(response => {
+      console.log(response)
+      setConfirmationCode('')
+      autoSignIn()
+      navigation.navigate('LoginScreen');
+    })
+    .catch(error => {
+        console.log('Error confirming sign up', error);
+    });
+  };
+
+  const resendConfirmationCode = () => {
+    resendSignUpCode({
+      username: username
+    })
+    .then(response => {
+      console.log(response)
+    })
+    .catch(error => {
+        console.log('Error confirming sign up', error);
+    });
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image style={styles.logoImage} source={require('../../assets/SeekifyLogoRedBlack.png')}/>
-        <Text style={styles.slug}>Discover, Savor, and Share</Text>
-      </View>
-      <View style={styles.subHeader}>
-        <Text style={styles.subHeaderText}>Login</Text>
+        <Text style={styles.slug}>Confirmation Email</Text>
+        <Text style={styles.subSlug}>Enter the code that was emailed to you!</Text>
       </View>
       <View style={styles.mainFormContainer}>
         <View style={styles.formContainer}>
@@ -37,34 +55,21 @@ const LoginScreen = () => {
             <TextInput
               style={styles.inputSplit}
               returnKeyType="done"
-              placeholder={'username'}
-              autoCapitalize='none'
-              value={username}
-              onChangeText={(text) => {handleUsernameChage(text)}}
+              placeholder={'confirmation code'}
+              value={confirmationCode}
+              onChangeText={(text) => {handleUsernameChange(text)}}
             />
           </View>
-          <View style={styles.userInputContainer}>
-            <Unlock style={styles.label} stroke={'black'} height={22} width={22} />
-            <TextInput
-              style={styles.inputSplit}
-              returnKeyType="done"
-              placeholder={'password'}
-              autoCapitalize='none'
-              secureTextEntry
-              value={password}
-              onChangeText={(text) => {handlePasswordChage(text)}}
-            />
-          </View>
-          <TouchableOpacity onPress={() => {navigation.navigate('ForgotScreen')}}>
-            <Text style={styles.forgotPassword}>Forgot Password</Text>
-          </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={() => {signInUser(username, password)}} style={styles.loginButton}>
-          <Text style={styles.loginText}>Login</Text>
+        <TouchableOpacity onPress={() => {confirmEmailCode()}} style={styles.loginButton}>
+          <Text style={styles.loginText}>Confirm Code</Text>
         </TouchableOpacity>
-      </View>
-      <View style={styles.createContainer}>
-        <Text style={styles.createText}>Create an account: <Text onPress={() => {navigation.navigate('SignupScreen')}} style={styles.blueText}>Signup</Text></Text>
+        <TouchableOpacity onPress={() => {resendConfirmationCode()}} style={styles.loginButtonInverse}>
+          <Text style={styles.loginTextInverse}>Resend Code</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => {navigation.goBack()}} style={styles.createContainer}>
+          <Text style={styles.createText}>Go Back</Text>
+        </TouchableOpacity>
       </View>
       <Image style={styles.icons} source={require('../../assets/abstract.png')}/>
     </View>
@@ -93,7 +98,12 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#e94f4e'
+    color: 'black'
+  },
+  subSlug: {
+    marginTop: 6,
+    fontSize: 16,
+    color: 'black'
   },
   subHeader: {
     marginTop: 18,
@@ -152,10 +162,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 16
   },
+  loginButtonInverse: {
+    marginTop: 16,
+    backgroundColor: 'white',
+    borderWidth: 2,
+    borderColor: '#e94f4e',
+    borderRadius: 10,
+    width: '90%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 16
+  },
   loginText: {
     fontWeight: 'bold',
     fontSize: 16,
     color: 'white'
+  },
+  loginTextInverse: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#e94f4e'
   },
   createContainer: {
     width: '100%',
@@ -181,4 +208,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default LoginScreen
+export default ConfirmEmailScreen
