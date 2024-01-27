@@ -1,8 +1,8 @@
 import { HubInternal } from '@aws-amplify/core/internals/utils'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, View, Dimensions, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, Image, TouchableOpacity, ScrollView } from 'react-native'
 import { ChevronLeft, ChevronsLeft, Info, Plus } from 'react-native-feather'
 import Stars from 'react-native-stars'
 
@@ -19,6 +19,12 @@ const SingleListScreen = ({route}) => {
   useEffect(() => {
     getListPlaces()
   }, [])
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getListPlaces();
+    }, []) // Add dependencies here
+  );
 
   const getListPlaces = () => {
     const url = `http://localhost:3000/api/v1/listplaces/${list_id}`;
@@ -40,6 +46,13 @@ const SingleListScreen = ({route}) => {
     return str;
   }
 
+  const limitStringLength18 = (str: string, maxLength = 20) => {
+    if (str.length > maxLength) {
+      return str.slice(0, maxLength) + '...';
+    }
+    return str;
+  }
+
   const formatAddress = (place) => {
     return limitStringLength(`${place.address_street} ${place.address_city}, ${place.address_state} ${place.address_zipcode}`)
   }
@@ -47,16 +60,17 @@ const SingleListScreen = ({route}) => {
   const displayPlaces = () => {
     return (
       <View style={styles.container}>
+        <ScrollView style={styles.scrollView}>
         {
           places.map((place) => {
             return(
               <View key={place.yelp_id} style={styles.cardContainer}>
                 <View style={styles.imageContainer}>
-                  <Image style={styles.placeImage} source={{uri: 'https://s3-media1.fl.yelpcdn.com/bphoto/Uja67ZEHFWO4D9P_WShKBA/o.jpg'}}/>
+                  <Image style={styles.placeImage} source={{uri: place.picture}}/>
                   <View style={styles.overlay}>
                     <View style={styles.overlayContainer}>
                       <View style={styles.overlayBar}>
-                        <Text style={styles.overlayTextHeader}>{place.name}</Text>
+                        <Text style={styles.overlayTextHeader}>{limitStringLength18(place.name)}</Text>
                         <Text style={styles.overlayText}>({place.price})</Text>
                       </View>
                       <View style={styles.overlayBar}>
@@ -86,12 +100,13 @@ const SingleListScreen = ({route}) => {
             )
           })
         }
+        </ScrollView>
       </View>
     )
   }
 
   return (
-    <View>
+    <View style={{flex: 1}}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => {navigation.goBack()}}>
           <ChevronsLeft style={styles.goBack}/>
@@ -101,9 +116,9 @@ const SingleListScreen = ({route}) => {
           <Text style={styles.listName}>OC Dinner Dates</Text>
           <Text style={styles.listUsers}>o-jandali, daniawareh</Text>
         </View>
-        <View style={styles.plusContainer}>
+        <TouchableOpacity onPress={() => {navigation.navigate('AddPlaceToListScreen', {list_id: list_id})}} style={styles.plusContainer}>
           <Plus style={styles.plus}/>
-        </View>
+        </TouchableOpacity>
       </View>
       {
         places.length > 0
@@ -117,14 +132,18 @@ const SingleListScreen = ({route}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 8,
+    paddingHorizontal: 8,
     backgroundColor: 'white'
+  },
+  scrollView: {
+    height: '100%',
+    width: '100%',
   },
   header: {
     height: 70,
     width: '100%',
     backgroundColor: '#E9E9E9',
-    borderBottomColor: 'grey',
+    borderBottomColor: 'lightgrey',
     borderBottomWidth: 2,
     display: 'flex',
     flexDirection: 'row',
@@ -171,7 +190,8 @@ const styles = StyleSheet.create({
     width: imageWidth,
     height: imageWidth,
     backgroundColor: '#e2e2e2',
-    borderRadius: 10
+    borderRadius: 10,
+    marginVertical: 8
   },
   imageContainer: {
     borderRadius: 10,

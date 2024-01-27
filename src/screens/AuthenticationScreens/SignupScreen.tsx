@@ -3,8 +3,9 @@ import { autoSignIn, signUp } from 'aws-amplify/auth'
 import React, { useState } from 'react'
 import { ActivityIndicator, Dimensions, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { CheckCircle, Mail, MapPin, Phone, Unlock, User } from 'react-native-feather'
-import { ROOT_ACCESS_KEY, ROOT_ACCESS_SECRET } from '../../../Authentication'
+import { ROOT_ACCESS_KEY, ROOT_ACCESS_SECRET } from '@env';
 const AWS = require('aws-sdk');
+
 
 const SignupScreen = () => {
   const navigation = useNavigation()
