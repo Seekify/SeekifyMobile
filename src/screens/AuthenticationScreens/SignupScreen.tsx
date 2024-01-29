@@ -1,9 +1,10 @@
 import { useNavigation } from '@react-navigation/native'
-import { autoSignIn, signUp } from 'aws-amplify/auth'
+import { signUp } from 'aws-amplify/auth'
 import React, { useState } from 'react'
 import { ActivityIndicator, Dimensions, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { CheckCircle, Mail, MapPin, Phone, Unlock, User } from 'react-native-feather'
+import { CheckCircle, Mail, MapPin, Phone, PhoneMissed, Unlock, User } from 'react-native-feather'
 import { ROOT_ACCESS_KEY, ROOT_ACCESS_SECRET } from '@env';
+import axios from 'axios'
 const AWS = require('aws-sdk');
 
 
@@ -139,11 +140,6 @@ const SignupScreen = () => {
   }
 
   const handleUpdateView = (text: string) => {
-    // console.log(validEmail)
-    // console.log(availableUsername)
-    // console.log(availableEmail)
-    // console.log(validPassword)
-    // console.log(validVerify)
 
     viewTab === 'signup'
       ? validEmail && availableEmail && availableUsername && validPassword && validVerify
@@ -154,32 +150,59 @@ const SignupScreen = () => {
 
   async function handleSignUp(){
 
-    try {
-      await signUp({
-        username,
-        password,
-        options: {
-          userAttributes: {
-            email: email,
-            phone_number: `+1${phone}`, 
-            given_name: firstName,
-            family_name: lastName,
-            nickname: firstName,
-            name: `${firstName} ${lastName}`,
-            locale: location,
-            'custom:followers': '0',
-            'custom:following': '0',
-            'custom:favorites': '0'
-          }
-        }
-      });
-      console.log('signup and confirmation sent')
-      navigation.navigate('ConfirmEmailScreen', {username:username})
-    } catch (error) {
-      console.log('error signing up:', error);
+    let userDate = {
+      username: username, 
+      email: email,
+      phone: phone,
+      location: location,
+      first_name: firstName,
+      last_name: lastName,
+      full_name: firstName + ' ' + lastName,
+      following: 0,
+      followers: 0,
+      favorites: 0
     }
+
+    signUp({
+      username,
+      password,
+      options: {
+        userAttributes: {
+          email: email,
+          phone_number: `+1${phone}`, 
+          given_name: firstName,
+          family_name: lastName,
+          nickname: firstName,
+          name: `${firstName} ${lastName}`,
+          locale: location,
+          'custom:followers': '0',
+          'custom:following': '0',
+          'custom:favorites': '0'
+        }
+      }
+    })
+    .then((response) => {
+      console.log(response)
+      userDate.user_id = response.userId
+      addProfile(userDate, username)
+    })
+    .catch((error) => {
+      console.log('error: ', error)
+    })
   }
 
+  const addProfile = (userDate: any, username: string) => {
+    const url = 'http://localhost:3000/api/v1/profiles/'; 
+    axios.post(url, userDate)
+      .then(response => {
+        console.log('Profile created successfully:', response.data);
+        navigation.navigate('ConfirmEmailScreen', {username: username})
+      })
+      .catch(error => {
+        console.error('Error creating new list:', error)
+      });
+  }
+  
   const displayProfile = () => {
     return (
       <View style={styles.container}>

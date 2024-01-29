@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native'
 import { autoSignIn, confirmSignUp, resendSignUpCode } from 'aws-amplify/auth'
+import axios from 'axios'
 import React, { useState } from 'react'
 import { Dimensions, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { Mail, MapPin, Phone, Unlock, User } from 'react-native-feather'

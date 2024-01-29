@@ -3,8 +3,9 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, View, Dimensions, Image, TouchableOpacity, ScrollView } from 'react-native'
-import { ChevronLeft, ChevronsLeft, Info, Plus } from 'react-native-feather'
+import { ChevronLeft, ChevronsLeft, Info, MessageSquare, Plus } from 'react-native-feather'
 import Stars from 'react-native-stars'
+import SingleListCardComponent from '../../components/List/SingleListCardComponent'
 
 const currentWidth = Dimensions.get('window').width
 const imageWidth = Dimensions.get('window').width - 16
@@ -15,6 +16,7 @@ const SingleListScreen = ({route}) => {
   const {list_id} = route.params
 
   const [places, setPlace] = useState([])
+  const [viewComments, setViewComments] = useState(false)
 
   useEffect(() => {
     getListPlaces()
@@ -31,31 +33,13 @@ const SingleListScreen = ({route}) => {
     axios.get(url)
       .then(response => {
         console.log('User lists:', response.data);
-        setPlace(response.data) // The response data is the list of user lists
+        setPlace(response.data) 
       })
       .catch(error => {
         console.error('Error fetching places:', error);
         throw error; // Rethrow the error for further handling, if necessary
       });
   };
-
-  function limitStringLength(str, maxLength = 35) {
-    if (str.length > maxLength) {
-      return str.slice(0, maxLength) + '...';
-    }
-    return str;
-  }
-
-  const limitStringLength18 = (str: string, maxLength = 20) => {
-    if (str.length > maxLength) {
-      return str.slice(0, maxLength) + '...';
-    }
-    return str;
-  }
-
-  const formatAddress = (place) => {
-    return limitStringLength(`${place.address_street} ${place.address_city}, ${place.address_state} ${place.address_zipcode}`)
-  }
 
   const displayPlaces = () => {
     return (
@@ -64,39 +48,9 @@ const SingleListScreen = ({route}) => {
         {
           places.map((place) => {
             return(
-              <View key={place.yelp_id} style={styles.cardContainer}>
-                <View style={styles.imageContainer}>
-                  <Image style={styles.placeImage} source={{uri: place.picture}}/>
-                  <View style={styles.overlay}>
-                    <View style={styles.overlayContainer}>
-                      <View style={styles.overlayBar}>
-                        <Text style={styles.overlayTextHeader}>{limitStringLength18(place.name)}</Text>
-                        <Text style={styles.overlayText}>({place.price})</Text>
-                      </View>
-                      <View style={styles.overlayBar}>
-                        <Text style={styles.overlayTextSmall}>{formatAddress(place)}</Text>
-                      </View>
-                      <View style={styles.overlayBar}>
-                        <View style={styles.starRating}>
-                          <Stars
-                            half={true}
-                            default={place.rating}
-                            spacing={3}
-                            starSize={20}
-                            count={5}
-                            fullStar={require('../../assets/rating-star-full-white.png')}
-                            emptyStar={require('../../assets/rating-star-empty-whote.png')}
-                            halfStar={require('../../assets/rating-star-half-white.png')}/
-                          >
-                        </View>
-                        <View>
-                          <Text style={styles.rating}>{place.review_count} Reviews</Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </View>
+              <>
+                <SingleListCardComponent place={place}/>
+              </>
             )
           })
         }
@@ -252,6 +206,11 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 16,
     paddingTop: 2
+  },
+  commentComtainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center'
   }
 })
 
