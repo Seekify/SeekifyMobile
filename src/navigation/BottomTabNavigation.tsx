@@ -4,14 +4,13 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { Activity, Heart, List, Search, User, Users } from 'react-native-feather';
 import ListStackNavigation from './ListStackNavigation';
-import PeopleTabNavigation from './PeopleTabNavigation';
 import ActivityTabNavigation from './ActivityTabNavigation';
-import RecommendationsTabNavigation from './RecommendationsTabNavigation';
 import ProfileTabNavigation from './ProfileTabNavigation';
 import { createStackNavigator } from '@react-navigation/stack';
 import AuthenticationStackNavigation from './AuthenticationStackNavigation';
 import { AuthContext } from '../context/AuthContext';
 import SearchTabNavigation from './SearchTabNavigation';
+import FavoritesTabNavigation from './FavoritesTabNavigation';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -58,9 +57,9 @@ const BottomTabNavigation = () => {
                     tabBarIcon: ({size, color}) => (<Activity stroke={'black'} height={22} width={22} />),
                   }}/>
                 <Tab.Screen
-                  name="Recommendations"
-                  key="Recommendations"
-                  component={RecommendationsTabNavigation}
+                  name="Favorites"
+                  key="Favorites"
+                  component={FavoritesTabNavigation}
                   options={{
                     tabBarShowLabel: false,
                     // eslint-disable-next-line react/no-unstable-nested-components
