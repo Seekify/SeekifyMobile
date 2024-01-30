@@ -5,6 +5,7 @@ import SingleListScreen from '../screens/ListScreens/SingleListScreen';
 import AddListScreen from '../screens/ListScreens/AddListScreen';
 import AddPlaceToListScreen from '../screens/ListScreens/AddPlaceToListScreen';
 import SinglePlaceScreen from '../screens/ListScreens/SinglePlaceScreen';
+import ListDetailsScreen from '../screens/ListScreens/ListDetailsScreen';
 
 const StackNav = createStackNavigator();
 
@@ -18,6 +19,7 @@ const ListStackNavigation = () => {
       <StackNav.Screen name="SingleListScreen" component={SingleListScreen} />
       <StackNav.Screen name="AddPlaceToListScreen" component={AddPlaceToListScreen} />
       <StackNav.Screen name="SinglePlaceScreen" component={SinglePlaceScreen} />
+      <StackNav.Screen name="ListDetailsScreen" component={ListDetailsScreen} />
     </StackNav.Navigator>
   );
 };

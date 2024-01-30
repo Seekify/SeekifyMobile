@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { YELP_API_KEY } from '@env'
 import axios from 'axios'
 import Stars from 'react-native-stars'
@@ -153,7 +153,7 @@ const SinglePlaceScreen = ({route}) => {
     <View style={{height: '100%', width: '100%'}}>
       {
         loading
-          ? <Text>loading...</Text>
+          ? <View style={styles.loadingScreen}><ActivityIndicator size="large" color="#00ff00" /></View>
           : showDetails()
       }
     </View>
@@ -164,6 +164,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 8,
+  },
+  loadingScreen: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   imageContainer: {
     height: imageWidth,

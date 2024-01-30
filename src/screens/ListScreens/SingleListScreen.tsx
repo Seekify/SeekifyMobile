@@ -17,16 +17,41 @@ const SingleListScreen = ({route}) => {
 
   const [places, setPlace] = useState([])
   const [viewComments, setViewComments] = useState(false)
+  const [listDetais, setListDetails] = useState({})
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    getListInformation()
     getListPlaces()
   }, [])
 
   useFocusEffect(
     React.useCallback(() => {
+      getListInformation()
       getListPlaces();
     }, []) // Add dependencies here
   );
+
+  const limitString = (str: string) => {
+    if (str.length > 25) {
+      return str.substring(0, 25) + '...';
+    } else {
+      return str;
+    }
+  }
+
+  const getListInformation = () => {
+    const url = `http://localhost:3000/api/v1/list/id/${list_id}`;
+    axios.get(url)
+      .then(response => {
+        console.log('User lists:', response.data);
+        setListDetails(response.data[0])
+      })
+      .catch(error => {
+        console.error('Error fetching places:', error);
+        throw error; // Rethrow the error for further handling, if necessary
+      });
+  };
 
   const getListPlaces = () => {
     const url = `http://localhost:3000/api/v1/listplaces/${list_id}`;
@@ -34,6 +59,7 @@ const SingleListScreen = ({route}) => {
       .then(response => {
         console.log('User lists:', response.data);
         setPlace(response.data) 
+        setLoading(false)
       })
       .catch(error => {
         console.error('Error fetching places:', error);
@@ -61,24 +87,28 @@ const SingleListScreen = ({route}) => {
 
   return (
     <View style={{flex: 1}}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => {navigation.goBack()}}>
-          <ChevronsLeft style={styles.goBack}/>
-        </TouchableOpacity>
-        <Image style={styles.listImage} />
-        <View style={{flex: 1}}>
-          <Text style={styles.listName}>OC Dinner Dates</Text>
-          <Text style={styles.listUsers}>o-jandali, daniawareh</Text>
-        </View>
-        <TouchableOpacity onPress={() => {navigation.navigate('AddPlaceToListScreen', {list_id: list_id})}} style={styles.plusContainer}>
-          <Plus style={styles.plus}/>
-        </TouchableOpacity>
-      </View>
       {
-        places.length > 0
-          ? displayPlaces()
-          : <Text>No places in this list</Text>
-      }
+        loading 
+          ? <Text>Loading...</Text>
+          : <><TouchableOpacity onPress={() => {navigation.navigate('ListDetailsScreen', {list_id: list_id})}} style={styles.header}>
+              <TouchableOpacity onPress={() => {navigation.goBack()}}>
+                <ChevronsLeft style={styles.goBack}/>
+              </TouchableOpacity>
+              <Image style={styles.listImage} />
+              <View style={{flex: 1}}>
+                <Text style={styles.listName}>{listDetais.name}</Text>
+                <Text>{limitString(listDetais.description)}</Text>
+              </View>
+              <TouchableOpacity onPress={() => {navigation.navigate('AddPlaceToListScreen', {list_id: list_id})}} style={styles.plusContainer}>
+                <Plus style={styles.plus}/>
+              </TouchableOpacity>
+            </TouchableOpacity>
+            {
+              places.length > 0
+                ? displayPlaces()
+                : <View style={styles.noListContainer}><Text style={styles.noListText}>No Place Added</Text></View>
+            }</>
+          }
     </View>
   )
 }
@@ -92,6 +122,18 @@ const styles = StyleSheet.create({
   scrollView: {
     height: '100%',
     width: '100%',
+  },
+  noListContainer: {
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  noListText: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginTop: 24
   },
   header: {
     height: 70,

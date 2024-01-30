@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native'
 import React, { useState } from 'react'
-import { Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { ChevronsLeft, Heart, Home, MapPin, Plus, Search } from 'react-native-feather'
 import { YELP_API_KEY } from '@env'
 import axios from 'axios'
@@ -235,10 +235,10 @@ const AddPlaceToListScreen = ({route}) => {
       <View style={styles.mainContent}>
         {
           loading
-            ? <View><Text>Loading...</Text></View>
+            ? <View style={styles.loadingScreen}><ActivityIndicator size="large" color="#00ff00" /></View>
             : searchResults.length > 0
                 ? displayPlaces()
-                : <View><Text>No Results</Text></View>
+                : <View style={styles.noListContainer}><Text style={styles.noListText}>No Results Found</Text></View>
         }
       </View>
     </View>
@@ -329,7 +329,25 @@ const styles = StyleSheet.create({
   },
   mainContent: {
     flex: 1,
-    backgroundColor: 'lightgrey'
+  },
+  loadingScreen: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  noListContainer: {
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  noListText: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginTop: 24
   },
   scrollContainer: {
     padding: 8,

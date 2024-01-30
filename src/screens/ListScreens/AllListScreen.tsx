@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { getCurrentUser, signOut } from 'aws-amplify/auth';
 import { AuthContext } from '../../context/AuthContext';
 import axios from 'axios';
@@ -15,6 +15,7 @@ const AllListScreen = () => {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    console.log(user.userId)
     fetchUserLists()
   }, [])
 
@@ -25,8 +26,7 @@ const AllListScreen = () => {
   );
 
   const fetchUserLists = () => {
-    console.log(user.username)
-    const url = `http://localhost:3000/api/v1/list/user/${user.username}`;
+    const url = `http://localhost:3000/api/v1/members/user/${user.userId}`;
     axios.get(url)
       .then(response => {
         console.log('User lists:', response.data);
@@ -83,7 +83,7 @@ const AllListScreen = () => {
                     })
                 }
               </View>
-            : <View><Text>No Lists Added</Text></View>
+            : <View style={styles.noListContainer}><Text style={styles.noListText}>No Lists Added</Text></View>
         }
       </ScrollView>
     )
@@ -98,7 +98,7 @@ const AllListScreen = () => {
       </View>
       {
         loading 
-          ? <View><Text>Loading...</Text></View>
+          ? <View style={styles.loadingScreen}><ActivityIndicator size="large" color="#00ff00" /></View>
           : displayLists()
       }
     </View>
@@ -124,8 +124,28 @@ const styles = StyleSheet.create({
     fontSize: 21,
     fontWeight: 'bold'
   },
+  loadingScreen: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   scroll: {
     flex: 1 
+  },
+  noListContainer: {
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  noListText: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginTop: 24
   },
   listContainer: {
     display: 'flex',
