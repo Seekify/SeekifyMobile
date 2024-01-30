@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { Activity, Heart, List, User, Users } from 'react-native-feather';
+import { Activity, Heart, List, Search, User, Users } from 'react-native-feather';
 import ListStackNavigation from './ListStackNavigation';
 import PeopleTabNavigation from './PeopleTabNavigation';
 import ActivityTabNavigation from './ActivityTabNavigation';
@@ -11,6 +11,7 @@ import ProfileTabNavigation from './ProfileTabNavigation';
 import { createStackNavigator } from '@react-navigation/stack';
 import AuthenticationStackNavigation from './AuthenticationStackNavigation';
 import { AuthContext } from '../context/AuthContext';
+import SearchTabNavigation from './SearchTabNavigation';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -39,13 +40,13 @@ const BottomTabNavigation = () => {
                     tabBarIcon: ({size, color}) => (<List stroke={'black'} height={22} width={22} />),
                   }}/>
                 <Tab.Screen
-                  name="People"
-                  key="People"
-                  component={PeopleTabNavigation}
+                  name="Search"
+                  key="Search"
+                  component={SearchTabNavigation}
                   options={{
                     tabBarShowLabel: false,
                     // eslint-disable-next-line react/no-unstable-nested-components
-                    tabBarIcon: ({size, color}) => (<Users stroke={'black'} height={22} width={22} />),
+                    tabBarIcon: ({size, color}) => (<Search stroke={'black'} height={22} width={22} />),
                   }}/>
                 <Tab.Screen
                   name="Activity"

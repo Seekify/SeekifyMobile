@@ -3,16 +3,18 @@ import { ActivityIndicator, Dimensions, Image, ScrollView, StyleSheet, Text, Tex
 import { YELP_API_KEY } from '@env'
 import axios from 'axios'
 import Stars from 'react-native-stars'
-import { Youtube } from 'react-native-feather'
+import { ChevronsLeft, Youtube } from 'react-native-feather'
 import image from '../../assets/yelp-svgrepo-com.svg'
 import { AuthContext } from '../../context/AuthContext'
 import SingleComment from '../../components/List/SingleComment'
+import { useNavigation } from '@react-navigation/native'
 
 const currentWidth = Dimensions.get('window').width
 const imageWidth = Dimensions.get('window').width - 16
 
 const SinglePlaceScreen = ({route}) => {
   const {place} = route.params
+  const navigation = useNavigation()
 
   const { user } = useContext(AuthContext);
 
@@ -151,6 +153,9 @@ const SinglePlaceScreen = ({route}) => {
 
   return (
     <View style={{height: '100%', width: '100%'}}>
+      <TouchableOpacity onPress={() => {navigation.goBack()}} style={styles.backIcon}>
+        <ChevronsLeft height={30} width={30} color={'white'}/>
+      </TouchableOpacity>
       {
         loading
           ? <View style={styles.loadingScreen}><ActivityIndicator size="large" color="#00ff00" /></View>
@@ -171,6 +176,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  backIcon: {
+    position: 'absolute',
+    top: 14,
+    left: 14,
+    zIndex: 2,
+    padding: 4,
+    backgroundColor: 'rgba(150, 150, 150, .7)',
+    borderRadius: 30
   },
   imageContainer: {
     height: imageWidth,
